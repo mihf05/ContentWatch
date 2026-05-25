@@ -29,14 +29,22 @@ ALLOWED_HOSTS = []
 
 from datetime import timedelta
 
-# auth definition
 AUTH_USER_MODEL = 'contentwatch.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+# doc settings 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CW API',
+    'DESCRIPTION': 'API documentation',
+    'VERSION': '1.0.0',
+}
+
+# auth definition
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
@@ -55,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf-spectacular',
 ]
 
 MIDDLEWARE = [

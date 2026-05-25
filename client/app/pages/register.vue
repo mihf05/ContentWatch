@@ -102,7 +102,7 @@ async function handleRegister() {
 
       <!-- Divider -->
       <div class="flex items-center gap-4 my-6">
-        <div class="h-px flex-grow bg-white/10"></div>
+        <div class="h-px grow bg-white/10"></div>
       </div>
 
       <p class="text-center text-sm text-gray-500 mt-8">

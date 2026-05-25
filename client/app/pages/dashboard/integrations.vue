@@ -4,6 +4,8 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({ title: 'Integrations' })
+
 const platforms = [
   {
     name: 'YouTube',
@@ -36,7 +38,7 @@ const platforms = [
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div v-for="platform in platforms" :key="platform.name"
-        class="bg-[#141414] border border-white/[0.06] rounded-2xl p-6 flex flex-col justify-between h-48">
+        class="bg-[#141414] border border-white/6 rounded-2xl p-6 flex flex-col justify-between h-48">
         <div>
           <div class="flex items-center gap-2.5 mb-3">
             <svg class="w-6 h-6" :class="platform.color" viewBox="0 0 24 24">
@@ -47,7 +49,7 @@ const platforms = [
           <p class="text-xs text-gray-400 leading-relaxed">{{ platform.desc }}</p>
         </div>
         <button
-          class="w-full py-2 bg-white/[0.04] hover:bg-white/[0.08] text-white text-xs font-semibold rounded-xl border border-white/[0.08] transition-all">
+          class="w-full py-2 bg-white/4 hover:bg-white/8 text-white text-xs font-semibold rounded-xl border border-white/8 transition-all">
           Connect Account
         </button>
       </div>

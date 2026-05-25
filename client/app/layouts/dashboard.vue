@@ -49,13 +49,13 @@ const userInitial = computed(() => {
 
     <!-- Sidebar -->
     <aside
-      class="fixed md:sticky top-0 left-0 z-50 h-screen flex flex-col bg-[#111111] border-r border-white/[0.06] transition-all duration-300"
+      class="fixed md:sticky top-0 left-0 z-50 h-screen flex flex-col bg-[#111111] border-r border-white/6 transition-all duration-300"
       :class="[
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         isCollapsed ? 'md:w-[72px]' : 'md:w-[260px]'
       ]">
       <!-- Logo -->
-      <div class="h-16 flex items-center justify-between px-5 border-b border-white/[0.06]">
+      <div class="h-16 flex items-center justify-between px-5 border-b border-white/6">
         <AppLogo size="sm" :collapsed="isCollapsed" />
         <button @click="toggleSidebar"
           class="hidden md:flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer">
@@ -70,19 +70,19 @@ const userInitial = computed(() => {
           :class="[
             route.path === item.to
               ? 'bg-brand/10 text-brand'
-              : 'text-gray-400 hover:text-white hover:bg-white/[0.04]',
+              : 'text-gray-400 hover:text-white hover:bg-white/4',
             isCollapsed ? 'px-0 justify-center w-10 h-10' : 'px-3 w-full'
           ]">
-          <span class="material-symbols-outlined text-xl flex-shrink-0">{{ item.icon }}</span>
+          <span class="material-symbols-outlined text-xl shrink-0">{{ item.icon }}</span>
           <span v-if="!isCollapsed" class="whitespace-nowrap">{{ item.label }}</span>
         </NuxtLink>
       </nav>
 
       <!-- User section -->
-      <div class="px-3 pb-4 border-t border-white/[0.06] pt-3">
+      <div class="px-3 pb-4 border-t border-white/6 pt-3">
         <div class="flex items-center gap-3 py-2" :class="isCollapsed ? 'justify-center' : 'px-3'">
           <div
-            class="w-8 h-8 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center text-brand text-xs font-bold flex-shrink-0">
+            class="w-8 h-8 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center text-brand text-xs font-bold shrink-0">
             {{ userInitial }}
           </div>
           <div v-if="!isCollapsed" class="flex-1 min-w-0">
@@ -92,7 +92,7 @@ const userInitial = computed(() => {
         <button @click="handleLogout"
           class="w-full mt-2 flex items-center gap-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200 cursor-pointer"
           :class="isCollapsed ? 'px-0 justify-center w-10 h-10 mx-auto' : 'px-3'">
-          <span class="material-symbols-outlined text-xl flex-shrink-0">logout</span>
+          <span class="material-symbols-outlined text-xl shrink-0">logout</span>
           <span v-if="!isCollapsed">Log out</span>
         </button>
       </div>
@@ -103,7 +103,7 @@ const userInitial = computed(() => {
 
       <!-- Top bar -->
       <header
-        class="sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-8 bg-jetblack/80 backdrop-blur-md border-b border-white/[0.06]">
+        class="sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-8 bg-jetblack/80 backdrop-blur-md border-b border-white/6">
         <!-- Mobile menu toggle -->
         <button @click="isSidebarOpen = true"
           class="md:hidden text-gray-400 hover:text-white transition-colors -ml-1 cursor-pointer">

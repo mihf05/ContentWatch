@@ -1,6 +1,8 @@
 <script setup>
 const authStore = useAuthStore()
 
+useHead({ title: 'About' })
+
 if (!authStore.user) {
   await authStore.fetchUser()
 }
@@ -34,7 +36,7 @@ const developers = [
 </script>
 
 <template>
-  <main class="relative min-h-screen pt-24 pb-16 px-4 sm:px-6 md:px-12 max-w-screen-xl mx-auto w-full overflow-hidden">
+  <main class="relative min-h-screen pt-24 pb-16 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto w-full overflow-hidden">
     <!-- Glow effect behind hero -->
     <div class="hero-glow"></div>
 
@@ -80,7 +82,7 @@ const developers = [
             {{ dev.name }}</h3>
           <span class="font-label-md text-label-md text-gray-400 font-medium mb-4 block">{{ dev.role }}</span>
 
-          <p class="font-body-sm text-body-sm text-gray-400 mb-6 flex-grow">
+          <p class="font-body-sm text-body-sm text-gray-400 mb-6 grow">
             {{ dev.bio }}
           </p>
 

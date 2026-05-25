@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
-useHead({ title: 'Create Account — ContentWatch' })
+useHead({ title: 'Sign Up' })
 
 const authStore = useAuthStore()
 const { showPopup } = usePopup()
@@ -13,10 +13,18 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 async function handleRegister() {
-  if (!email.value || !password.value || !confirmPassword.value) return
+  if (!email.value || !password.value || !confirmPassword.value) {
+    showPopup('Please fill in all fields', 'error')
+    return
+  }
 
   if (password.value !== confirmPassword.value) {
     showPopup('Passwords do not match', 'error')
+    return
+  }
+
+  if (password.value.length < 8) {
+    showPopup('Password must be at least 8 characters long', 'error')
     return
   }
 

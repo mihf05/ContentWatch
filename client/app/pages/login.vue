@@ -1,16 +1,24 @@
 <script setup>
 definePageMeta({ layout: 'auth', middleware: 'guest' })
 
-useHead({ title: 'Login — ContentWatch' })
+useHead({ title: 'Sign In' })
 
 const authStore = useAuthStore()
+const { showPopup } = usePopup()
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 
 async function handleLogin() {
-  if (!email.value || !password.value) return
+  if (!email.value) {
+    showPopup('Please enter your email', 'error')
+    return
+  }
+  if (!password.value) {
+    showPopup('Please enter your password', 'error')
+    return
+  }
 
   const success = await authStore.login(email.value, password.value)
   if (success) {
@@ -50,8 +58,8 @@ async function handleLogin() {
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <label for="login-password" class="text-sm font-medium text-gray-300">Password</label>
-            <NuxtLink to="#" class="text-xs text-brand hover:text-brand/80 transition-colors">Forgot password?
-            </NuxtLink>
+            <!-- <NuxtLink to="#" class="text-xs text-brand hover:text-brand/80 transition-colors">Forgot password?
+            </NuxtLink> -->
           </div>
           <div class="relative">
             <Icon name="material-symbols:lock-outline"
@@ -80,7 +88,7 @@ async function handleLogin() {
 
       <!-- Divider -->
       <div class="flex items-center gap-4 my-6">
-        <div class="h-px flex-grow bg-white/10"></div>
+        <div class="h-px grow bg-white/10"></div>
       </div>
 
       <p class="text-center text-sm text-gray-500 mt-8">

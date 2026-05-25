@@ -4,6 +4,8 @@ definePageMeta({
   middleware: 'auth',
 })
 
+useHead({ title: 'Analytics' })
+
 const {
   isLoading,
   fetchError,

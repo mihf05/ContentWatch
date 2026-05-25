@@ -4,6 +4,8 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({ title: 'Settings' })
+
 const authStore = useAuthStore()
 </script>
 
@@ -14,7 +16,7 @@ const authStore = useAuthStore()
       <p class="text-sm text-gray-400">Configure profile, strategy preferences, and credentials.</p>
     </div>
 
-    <div class="bg-[#141414] border border-white/[0.06] rounded-2xl p-6 divide-y divide-white/[0.06] space-y-6">
+    <div class="bg-[#141414] border border-white/6 rounded-2xl p-6 divide-y divide-white/6 space-y-6">
       <!-- Profile section -->
       <div class="pb-6">
         <h3 class="text-base font-bold text-white mb-2">Account Email</h3>
@@ -33,7 +35,7 @@ const authStore = useAuthStore()
 
       <!-- Settings configuration -->
       <div class="pt-6">
-        <h3 class="text-base font-bold text-white mb-2 font-semibold">Preferences</h3>
+        <h3 class="text-base font-bold text-white mb-2">Preferences</h3>
         <div class="space-y-4 mt-4">
           <label class="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked class="rounded border-white/10 bg-white/5 text-brand focus:ring-0" />

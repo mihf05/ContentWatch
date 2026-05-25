@@ -8,6 +8,7 @@ import {
 
 export function useAnalytics() {
   const { apiFetch } = useApiFetch()
+  const { showError } = usePopup()
 
   const isLoading = ref(true)
   const fetchError = ref(null)
@@ -37,7 +38,7 @@ export function useAnalytics() {
       durationBuckets.value = duration
       timeBuckets.value = time
     } catch (err) {
-      console.error('Failed to load analytics:', err)
+      showError(err, 'Could not load analytics data. Please try again.')
       fetchError.value = 'Could not load analytics data. Please try again.'
     } finally {
       isLoading.value = false

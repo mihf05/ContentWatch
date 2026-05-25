@@ -26,6 +26,7 @@ useHead({
 
 <template>
     <NuxtLayout>
+        <UiPopupMessage />
         <NuxtPage />
     </NuxtLayout>
 </template>

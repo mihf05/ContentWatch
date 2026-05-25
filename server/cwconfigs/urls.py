@@ -4,7 +4,9 @@ from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from contentwatch.views import (
     RegisterView, LoginView, UserMeView,
-    EngagementTimeSeries, ViewTimeSeries, InsightsView
+    EngagementTimeSeries, ViewTimeSeries, InsightsView,
+    ContentTypeBucketView, DurationBucketView, TimeBucketView,
+    ContentDNAView,
 )
 
 
@@ -22,5 +24,10 @@ urlpatterns = [
     path('api/user/insights', InsightsView.as_view(), name='insights'),
     path('api/user/timeseries/engagements', EngagementTimeSeries.as_view(), name='engagements'),
     path('api/user/timeseries/views', ViewTimeSeries.as_view(), name='views'),
+
+    path('api/user/bucket/contentype', ContentTypeBucketView.as_view(), name='content_type_bucket'),
+    path('api/user/bucket/duration', DurationBucketView.as_view(), name='duration_bucket'),
+    path('api/user/bucket/time', TimeBucketView.as_view(), name='time_bucket'),
+    path('api/user/contentdna', TimeBucketView.as_view(), name='content_dna'),
 ]
 

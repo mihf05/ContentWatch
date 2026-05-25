@@ -1,8 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
-from blueprint import BasePlatformAdapter
-from dataclass import VideoMetrics
+from .blueprint import BasePlatformAdapter
+from .dataclass import VideoMetrics
 
 
 class UniversalMetricsFetcher:

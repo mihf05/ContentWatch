@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.cache import cache
+
 
 from .models import (
     AIAgentProfile,
@@ -93,27 +95,33 @@ class AIPipelineRunViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        from django.core.cache import cache
-        lock_key = f"ai_pipeline_trigger_lock_{run.id}"
-        
-        # 1. Prevent concurrent double-clicks or races using a Redis cache lock
-        if not cache.add(lock_key, "locked", timeout=15):
-            return Response(
-                {"error": "Pipeline execution is already being triggered."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        # 1. First perform DB-level check inside atomic select_for_update to block concurrent triggers
+        from django.db import transaction
+        with transaction.atomic():
+            run = AIPipelineRun.objects.select_for_update().get(id=run.id)
+            if run.status in ['pending', 'in_progress']:
+                return Response(
+                    {"error": f"Cannot trigger pipeline run in status: {run.status}."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        # 2. Prevent triggering if the run is already active or finished
-        if run.status in ['in_progress', 'completed']:
-            return Response(
-                {"error": f"Cannot trigger pipeline run in status: {run.status}."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            # 2. Acquire Redis cache double-click lock to block rapid duplicate requests
+            lock_key = f"ai_pipeline_trigger_lock_{run.id}"
+            if not cache.add(lock_key, "locked", timeout=15):
+                return Response(
+                    {"error": "Pipeline execution is already being triggered."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-        run.status = 'pending'
-        run.save(update_fields=['status'])
+            try:
+                run.status = 'pending'
+                run.save(update_fields=['status'])
+            except Exception as e:
+                # Safely delete lock on early failure paths
+                cache.delete(lock_key)
+                raise e
 
-        # Delay run task in celery
+        # 3. Enqueue Celery task
         execute_ai_pipeline.delay(run.id)
 
         serializer = self.get_serializer(run)

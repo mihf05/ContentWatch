@@ -1,6 +1,6 @@
 from contentwatch.models import ContentDNA, Insight
 
-from analyze import generate_analytics_report
+from .analyze import generate_analytics_report
 
 
 def process_and_save_analysis_view(request, analysis_run_obj, metric_payload):

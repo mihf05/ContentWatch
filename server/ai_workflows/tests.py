@@ -120,7 +120,7 @@ class AIWorkflowTests(APITestCase):
         }
         response = self.client.post(url, run_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['status'], 'pending')
+        self.assertEqual(response.data['status'], 'idle')
         run_id = response.data['id']
 
         # 4. Trigger the run API endpoint

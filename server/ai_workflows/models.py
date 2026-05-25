@@ -118,6 +118,7 @@ class AIPipelineRun(models.Model):
     A single execution instance of an AI pipeline.
     """
     STATUS_CHOICES = [
+        ('idle', 'Idle / Draft'),
         ('pending', 'Pending'),
         ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
@@ -130,7 +131,7 @@ class AIPipelineRun(models.Model):
     template = models.ForeignKey(
         AIPipelineTemplate, on_delete=models.CASCADE, related_name='runs'
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='idle')
     triggered_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )

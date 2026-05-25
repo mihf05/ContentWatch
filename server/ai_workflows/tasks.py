@@ -1,6 +1,7 @@
 import time
 import logging
 from celery import shared_task
+from django.conf import settings
 from django.utils import timezone
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -32,15 +33,9 @@ def broadcast_ai_event(run_id, event_type, data):
         )
 
 
-from django.conf import settings
-
-
 def simulated_sleep(seconds):
-    """
-    Simulates a streaming delay for demonstration/development mode.
-    Gated behind settings.DEBUG so throughput is not artificially slowed in production or tests.
-    """
-    if getattr(settings, 'SIMULATE_AI_STREAMING_SLEEP', True) and settings.DEBUG:
+    
+    if getattr(settings, 'SIMULATE_AI_STREAMING_SLEEP', False):
         time.sleep(seconds)
 
 

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from dataclass import VideoMetrics
+from .dataclass import VideoMetrics
 
 class BasePlatformAdapter(ABC):
     

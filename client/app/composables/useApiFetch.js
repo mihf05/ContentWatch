@@ -6,13 +6,13 @@ export const useApiFetch = () => {
     try {
       const authStore = useAuthStore();
       accessToken = authStore.accessToken;
-    } catch (e) {}
+    } catch (e) { }
 
     // Fallback 1: Nuxt Cookie Ref
     if (!accessToken) {
       try {
         accessToken = useCookie("cw_access_token").value;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Fallback 2: Direct document.cookie parse

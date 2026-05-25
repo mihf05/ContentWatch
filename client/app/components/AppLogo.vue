@@ -2,7 +2,7 @@
 defineProps({
   size: {
     type: String,
-    default: 'md' // 'sm', 'md', 'lg'
+    default: 'md'
   },
   collapsed: {
     type: Boolean,
@@ -14,7 +14,7 @@ defineProps({
 <template>
   <NuxtLink to="/" class="flex items-center gap-2 group outline-none">
     <div
-      class="relative flex items-center justify-center rounded-lg bg-gradient-to-br from-brand/20 to-brand/5 border border-brand/20 group-hover:border-brand/40 transition-colors"
+      class="relative flex items-center justify-center rounded-lg bg-linear-to-br from-brand/20 to-brand/5 border border-brand/20 group-hover:border-brand/40 transition-colors"
       :class="[
         size === 'sm' ? 'w-6 h-6' : size === 'lg' ? 'w-10 h-10' : 'w-8 h-8'
       ]">

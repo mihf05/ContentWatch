@@ -4,7 +4,10 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({ title: 'Dashboard Overview' })
+
 const { apiFetch } = useApiFetch()
+const { showError } = usePopup()
 
 const insights = ref(null)
 const isLoading = ref(true)
@@ -17,7 +20,7 @@ async function loadInsights() {
     const data = await apiFetch('/user/insights')
     insights.value = data
   } catch (err) {
-    console.error('Failed to load insights:', err)
+    showError(err, 'Failed to load strategy insights. Please try again.')
     fetchError.value = 'Failed to load strategy insights. Please try again.'
   } finally {
     isLoading.value = false
@@ -44,7 +47,7 @@ onMounted(() => {
         <h2 class="text-2xl font-bold text-white tracking-tight">Overview</h2>
       </div>
       <button @click="loadInsights"
-        class="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/[0.08] text-white text-sm font-medium rounded-xl border border-white/[0.08] transition-all cursor-pointer">
+        class="flex items-center gap-2 px-4 py-2 bg-white/3 hover:bg-white/8 text-white text-sm font-medium rounded-xl border border-white/8 transition-all cursor-pointer">
         <span class="material-symbols-outlined text-lg" :class="{ 'animate-spin': isLoading }">refresh</span>
         Refresh
       </button>
@@ -53,8 +56,8 @@ onMounted(() => {
     <!-- Error State -->
     <div v-if="fetchError"
       class="p-5 bg-red-500/10 border border-red-500/15 rounded-2xl flex items-center gap-3 text-red-200">
-      <span class="material-symbols-outlined text-2xl flex-shrink-0 text-red-400">error</span>
-      <div class="flex-grow">
+      <span class="material-symbols-outlined text-2xl shrink-0 text-red-400">error</span>
+      <div class="grow">
         <p class="text-sm font-semibold">Error Loading Insights</p>
         <p class="text-xs text-gray-400 mt-0.5">{{ fetchError }}</p>
       </div>
@@ -64,10 +67,9 @@ onMounted(() => {
 
     <!-- Loading State -->
     <div v-else-if="isLoading" class="space-y-8">
-      <div class="h-64 bg-white/[0.02] border border-white/[0.04] rounded-3xl animate-pulse" />
+      <div class="h-64 bg-white/2 border border-white/4 rounded-3xl animate-pulse" />
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div v-for="i in 4" :key="i"
-          class="h-44 bg-white/[0.02] border border-white/[0.04] rounded-3xl animate-pulse" />
+        <div v-for="i in 4" :key="i" class="h-44 bg-white/2 border border-white/4 rounded-3xl animate-pulse" />
       </div>
     </div>
 
@@ -75,7 +77,7 @@ onMounted(() => {
     <div v-else class="space-y-8">
       <!-- Strategy Block Hero Card -->
       <div
-        class="relative overflow-hidden bg-[#121212] border border-white/[0.06] rounded-3xl p-8 shadow-2xl transition-all duration-300 hover:border-brand/20">
+        class="relative overflow-hidden bg-[#121212] border border-white/6 rounded-3xl p-8 shadow-2xl transition-all duration-300 hover:border-brand/20">
         <!-- Radial glow -->
         <div class="absolute -right-24 -top-24 w-80 h-80 bg-brand/10 rounded-full blur-3xl pointer-events-none" />
         <div class="absolute -left-24 -bottom-24 w-80 h-80 bg-brand/5 rounded-full blur-3xl pointer-events-none" />
@@ -97,7 +99,7 @@ onMounted(() => {
 
           <!-- Large abstract visualization -->
           <div
-            class="flex-shrink-0 flex items-center justify-center w-36 h-36 rounded-full bg-gradient-to-tr from-brand/20 to-brand/5 border border-brand/30 shadow-[0_0_30px_rgba(77,220,198,0.1)] relative">
+            class="shrink-0 flex items-center justify-center w-36 h-36 rounded-full bg-linear-to-tr from-brand/20 to-brand/5 border border-brand/30 shadow-[0_0_30px_rgba(77,220,198,0.1)] relative">
             <div
               class="absolute inset-2 rounded-full border border-dashed border-brand/20 animate-spin [animation-duration:15s]" />
             <span class="material-symbols-outlined text-5xl text-brand">track_changes</span>
@@ -110,7 +112,7 @@ onMounted(() => {
 
         <!-- Parameter 1: Best Content Type -->
         <div
-          class="group bg-[#121212] border border-white/[0.06] rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
+          class="group bg-[#121212] border border-white/6 rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-[10px] text-brand font-bold uppercase tracking-wider block mb-1">Optimal Format</span>
@@ -134,7 +136,7 @@ onMounted(() => {
 
         <!-- Parameter 2: Best Topic -->
         <div
-          class="group bg-[#121212] border border-white/[0.06] rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
+          class="group bg-[#121212] border border-white/6 rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-[10px] text-brand font-bold uppercase tracking-wider block mb-1">Niche Target</span>
@@ -158,7 +160,7 @@ onMounted(() => {
 
         <!-- Parameter 3: Best Posting Time -->
         <div
-          class="group bg-[#121212] border border-white/[0.06] rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
+          class="group bg-[#121212] border border-white/6 rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-[10px] text-brand font-bold uppercase tracking-wider block mb-1">Timing Matrix</span>
@@ -182,7 +184,7 @@ onMounted(() => {
 
         <!-- Parameter 4: Best Duration -->
         <div
-          class="group bg-[#121212] border border-white/[0.06] rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
+          class="group bg-[#121212] border border-white/6 rounded-3xl p-6 transition-all duration-300 hover:border-brand/20 hover:bg-[#141414] flex flex-col justify-between min-h-[180px]">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-[10px] text-brand font-bold uppercase tracking-wider block mb-1">Attention Span</span>

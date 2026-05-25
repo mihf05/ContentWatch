@@ -4,7 +4,10 @@ definePageMeta({
   middleware: 'auth'
 })
 
+useHead({ title: 'Content DNA' })
+
 const { apiFetch } = useApiFetch()
+const { showError } = usePopup()
 
 const dnaData = ref(null)
 const isLoading = ref(true)
@@ -17,7 +20,7 @@ async function loadDNA() {
     const data = await apiFetch('/user/contentdna')
     dnaData.value = data
   } catch (err) {
-    console.error('Failed to load Content DNA:', err)
+    showError(err, 'Could not retrieve your Content DNA. Please try again.')
     fetchError.value = 'Could not retrieve your Content DNA. Please try again.'
   } finally {
     isLoading.value = false

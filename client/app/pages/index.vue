@@ -8,7 +8,7 @@ if (!authStore.user) {
 
 <template>
   <main
-    class="flex-grow pt-24 md:pt-32 pb-16 md:pb-24 relative z-10 px-4 sm:px-6 md:px-12 max-w-screen-2xl mx-auto w-full overflow-hidden">
+    class="grow pt-24 md:pt-32 pb-16 md:pb-24 relative z-10 px-4 sm:px-6 md:px-12 max-w-screen-2xl mx-auto w-full overflow-hidden">
     <div class="hero-glow"></div>
 
     <!-- Hero Section -->
@@ -37,7 +37,7 @@ if (!authStore.user) {
     <section id="analytics" class="mb-16 md:mb-32 relative z-10 pt-20 -mt-20">
       <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 mb-8 md:mb-10">
         <h2 class="font-headline-lg text-headline-lg text-white">Precision Insights</h2>
-        <div class="hidden md:block h-[1px] flex-grow bg-gradient-to-r from-white/10 to-transparent ml-6"></div>
+        <div class="hidden md:block h-px grow bg-linear-to-r from-white/10 to-transparent ml-6"></div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6">
@@ -83,7 +83,7 @@ if (!authStore.user) {
             <Icon name="material-symbols:bolt" class="text-[16px]" /> Next Action
           </div>
           <h3 class="font-headline-md text-headline-md text-white mb-3 sm:mb-4">Engage Fast</h3>
-          <p class="font-body-sm text-body-sm text-gray-400 flex-grow">
+          <p class="font-body-sm text-body-sm text-gray-400 grow">
             Reply to the top 3 comments within the first hour of posting to boost algorithmic reach by an estimated 18%.
           </p>
           <button
@@ -96,7 +96,7 @@ if (!authStore.user) {
         <div
           class="sm:col-span-1 lg:col-span-6 glass-card rounded-xl p-5 sm:p-6 flex items-center gap-4 sm:gap-6 hover:bg-neutral-900 transition-colors duration-300">
           <div
-            class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 bg-neutral-900 flex items-center justify-center border border-white/10">
+            class="w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 bg-neutral-900 flex items-center justify-center border border-white/10">
             <Icon name="material-symbols:schedule" class="text-brand text-lg sm:text-xl" />
           </div>
           <div class="min-w-0">
@@ -110,7 +110,7 @@ if (!authStore.user) {
         <div
           class="sm:col-span-1 lg:col-span-6 glass-card rounded-xl p-5 sm:p-6 flex items-center gap-4 sm:gap-6 hover:bg-neutral-900 transition-colors duration-300">
           <div
-            class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 bg-neutral-900 flex items-center justify-center border border-white/10">
+            class="w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 bg-neutral-900 flex items-center justify-center border border-white/10">
             <Icon name="material-symbols:timer" class="text-brand text-lg sm:text-xl" />
           </div>
           <div class="min-w-0">

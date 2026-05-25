@@ -4,9 +4,11 @@ from blueprint import BasePlatformAdapter
 from dataclass import VideoMetrics
 
 
+GEMINI_API_KEY = 'AIzaSyAkzs1lUXNPh3hW4n5fI18DEx6HTc83AdM'
+
 class YouTubeAdapter(BasePlatformAdapter):
-    def __init__(self, api_key: str):
-        self.api_key = api_key
+    def __init__(self):
+        self.api_key = GEMINI_API_KEY
         self.authenticate()
 
     def authenticate(self) -> None:
@@ -14,11 +16,11 @@ class YouTubeAdapter(BasePlatformAdapter):
         pass
 
     def fetch_video_data(self, video_id: str) -> VideoMetrics:
-        # Pseudo-code: Imagine this is the raw response from YouTube's API
+        
         yt_raw_response = {
             "snippet": {"publishedAt": "2026-05-25T14:30:00Z", "title": "Python Tutorial"},
             "statistics": {"viewCount": "15000", "likeCount": "1200", "commentCount": "85"},
-            "contentDetails": {"duration": "PT5M30S"} # ISO 8601 duration
+            "contentDetails": {"duration": "PT5M30S"} 
         }
         
         # Parse and Map to standard format

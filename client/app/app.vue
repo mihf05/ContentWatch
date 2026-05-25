@@ -1,32 +1,31 @@
 <script setup>
 useSeoMeta({
-    title: "Project Name",
-    titleTemplate: (title) => title ? `${title} | Project Name` : "Project Name",
+    title: "ContentWatch - AI-Driven Creator Intelligence",
+    titleTemplate: (title) => title ? `${title} | ContentWatch` : "ContentWatch",
 
-    description: "",
+    description: "AI-Driven Creator Intelligence that analyzes your audience's deepest engagement patterns to deliver precise, actionable content strategies.",
 
-    ogTitle: "Project Name",
-    ogDescription: "",
+    ogTitle: "ContentWatch",
+    ogDescription: "AI-Driven Creator Intelligence that analyzes your audience's deepest engagement patterns to deliver precise, actionable content strategies.",
 
     ogType: "website",
-    ogSiteName: "Project Name",
+    ogSiteName: "ContentWatch",
 
-    twitterTitle: "Project Name",
-    twitterDescription: "",
+    twitterTitle: "ContentWatch",
+    twitterDescription: "AI-Driven Creator Intelligence that analyzes your audience's deepest engagement patterns to deliver precise, actionable content strategies.",
     twitterCard: "summary_large_image",
 })
 
 useHead({
     htmlAttrs: {
-        lang: "en"
+        lang: "en",
+        class: "dark"
     }
 })
 </script>
 
 <template>
-    <UApp>
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
-    </UApp>
+    <NuxtLayout>
+        <NuxtPage />
+    </NuxtLayout>
 </template>

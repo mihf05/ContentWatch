@@ -11,11 +11,16 @@
   },
   "dependencies": {
     "@vueuse/nuxt": "^14.3.0",
+    "apexcharts": "^5.13.0",
     "nuxt": "^4.4.6",
     "vue": "^3.5.34",
-    "vue-router": "^5.0.7"
+    "vue-router": "^5.0.7",
+    "vue3-apexcharts": "^1.11.1"
   },
   "devDependencies": {
+    "@iconify-json/material-symbols": "^1.2.74",
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/ri": "^1.2.10",
     "@nuxt/icon": "^2.2.2",
     "@nuxt/image": "^2.0.0",
     "@pinia/nuxt": "^0.11.3",

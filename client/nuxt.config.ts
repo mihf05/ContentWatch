@@ -30,6 +30,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only — used by SSR $fetch so it hits Django directly
+    apiBaseServer: 'http://127.0.0.1:8000/api',
     public: {
       apiBase: '/api',
     }

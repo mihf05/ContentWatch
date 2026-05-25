@@ -3,6 +3,10 @@ defineProps({
   size: {
     type: String,
     default: 'md' // 'sm', 'md', 'lg'
+  },
+  collapsed: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -18,7 +22,7 @@ defineProps({
         size === 'sm' ? 'text-sm' : size === 'lg' ? 'text-2xl' : 'text-xl'
       ]" />
     </div>
-    <div class="font-bold tracking-tight flex items-center" :class="[
+    <div v-if="!collapsed" class="font-bold tracking-tight flex items-center" :class="[
       size === 'sm' ? 'text-lg' : size === 'lg' ? 'text-3xl' : 'text-2xl text-headline-md font-headline-md'
     ]">
       <span class="text-white">Content</span><span class="text-brand">Watch</span>

@@ -25,7 +25,7 @@ export const useApiFetch = () => {
       }
     }
 
-    let baseURL = config.public.apiBase;
+    let baseURL = (import.meta.server && config.apiBaseServer) ? config.apiBaseServer : config.public.apiBase;
     if (import.meta.client && baseURL.startsWith("http")) {
       baseURL = "/api";
     }

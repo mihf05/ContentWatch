@@ -28,6 +28,6 @@ urlpatterns = [
     path('api/user/bucket/contentype', ContentTypeBucketView.as_view(), name='content_type_bucket'),
     path('api/user/bucket/duration', DurationBucketView.as_view(), name='duration_bucket'),
     path('api/user/bucket/time', TimeBucketView.as_view(), name='time_bucket'),
-    path('api/user/contentdna', TimeBucketView.as_view(), name='content_dna'),
+    path('api/user/contentdna', ContentDNAView.as_view(), name='content_dna'),
 ]
 

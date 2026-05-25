@@ -22,7 +22,7 @@ async function handleRegister() {
 
   const success = await authStore.register(email.value, password.value, confirmPassword.value)
   if (success) {
-    navigateTo('/')
+    navigateTo('/dashboard')
   }
 }
 </script>

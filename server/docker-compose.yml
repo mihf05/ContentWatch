@@ -6,13 +6,35 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - media_data:/app/media
     depends_on:
       - cwredis
+      - cwdb
     environment:
-      REDIS_HOST: redis
+      REDIS_HOST: cwredis
       REDIS_PORT: 6379
+      DJANGO_SETTINGS_MODULE: cwconfigs.settings
     networks:
       - system
+    # Use daphne for ASGI (WebSocket support)
+    command: daphne -b 0.0.0.0 -p 8000 cwconfigs.asgi:application
+
+  cwcelery:
+    build: .
+    container_name: cwcelery
+    volumes:
+      - .:/app
+      - media_data:/app/media
+    depends_on:
+      - cwredis
+      - cwdb
+    environment:
+      REDIS_HOST: cwredis
+      REDIS_PORT: 6379
+      DJANGO_SETTINGS_MODULE: cwconfigs.settings
+    networks:
+      - system
+    command: celery -A cwconfigs worker -l info --concurrency=2
 
   cwredis:
     image: redis:7-alpine
@@ -42,3 +64,4 @@ networks:
 
 volumes:
   postgres_data:
+  media_data:

@@ -1,6 +1,6 @@
 import random
 
-from fetcher import CW_PlatformFetcher
+from .fetcher import CW_PlatformFetcher
 
 
 cw_fetcher = CW_PlatformFetcher()

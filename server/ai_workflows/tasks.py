@@ -1,6 +1,7 @@
 import time
 import logging
 from celery import shared_task
+from django.conf import settings
 from django.utils import timezone
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -32,6 +33,12 @@ def broadcast_ai_event(run_id, event_type, data):
         )
 
 
+def simulated_sleep(seconds):
+    
+    if getattr(settings, 'SIMULATE_AI_STREAMING_SLEEP', False):
+        time.sleep(seconds)
+
+
 def retrieve_rag_context(organization, step_type, inputs):
     """
     Performs context-aware RAG retrieval. Queries the organization's knowledge documents
@@ -50,24 +57,24 @@ def retrieve_rag_context(organization, step_type, inputs):
         category__in=categories
     )
 
-    # Core matching: scan for matching keywords from inputs
+    # Core matching: scan for matching keywords from inputs (cached outside loop)
     matched_chunks = []
     input_text = " ".join([str(v) for v in inputs.values()]).lower()
+    input_words = [word for word in input_text.split() if len(word) > 3]
 
     for doc in docs:
-        # Check if the title or content matches input keywords
         score = 0
-        words = input_text.split()
-        for word in words:
-            if len(word) > 3:
-                if word in doc.title.lower():
-                    score += 10
-                if word in doc.content.lower():
-                    score += doc.content.lower().count(word)
+        doc_title_lower = doc.title.lower()
+        doc_content_lower = doc.content.lower()
+        
+        for word in input_words:
+            if word in doc_title_lower:
+                score += 10
+            if word in doc_content_lower:
+                score += doc_content_lower.count(word)
 
         # Categorical relevance fallback score
         score += 2
-
         matched_chunks.append((score, doc))
 
     # Sort by relevance score descending
@@ -105,8 +112,10 @@ def execute_ai_pipeline(run_id):
         steps = run.template.steps.all().order_by('order')
         inputs = run.inputs
 
-        # Clear old step runs if any
-        run.step_runs.all().delete()
+        # Clear old step runs only if they exist (safeguard against data loss / duplicate triggers)
+        if run.step_runs.exists():
+            logger.warning(f"Re-running AIPipelineRun #{run.id}, clearing previous step runs.")
+            run.step_runs.all().delete()
 
         for step in steps:
             step_run = AIStepRun.objects.create(
@@ -134,7 +143,7 @@ def execute_ai_pipeline(run_id):
                 "step_id": step.id,
                 "thoughts": step_run.agent_thoughts
             })
-            time.sleep(1.0)
+            simulated_sleep(1.0)
 
             # --- Perform RAG context retrieval ---
             rag_context = retrieve_rag_context(run.organization, step.step_type, inputs)
@@ -147,7 +156,7 @@ def execute_ai_pipeline(run_id):
                 "step_id": step.id,
                 "thoughts": step_run.agent_thoughts
             })
-            time.sleep(1.0)
+            simulated_sleep(1.0)
 
             # --- Dynamic Content Generation ---
             topic = inputs.get('topic', 'Content Watch Creator Tech')
@@ -195,7 +204,7 @@ def execute_ai_pipeline(run_id):
                 "step_id": step.id,
                 "thoughts": step_run.agent_thoughts
             })
-            time.sleep(1.0)
+            simulated_sleep(1.0)
 
             # --- Stream Output Chunks ---
             full_content = ""
@@ -213,12 +222,12 @@ def execute_ai_pipeline(run_id):
                         "step_id": step.id,
                         "content": full_content
                     })
-                    time.sleep(0.08) # Quick sleep to represent streaming animation
+                    simulated_sleep(0.08) # Quick sleep to represent streaming animation
 
                 full_content += "\n\n"
                 step_run.output_content = full_content
                 step_run.save(update_fields=['output_content'])
-                time.sleep(0.3)
+                simulated_sleep(0.3)
 
             # --- Complete Step Run ---
             thoughts.append("✅ Step run completed successfully!")
@@ -233,7 +242,7 @@ def execute_ai_pipeline(run_id):
                 "thoughts": step_run.agent_thoughts,
                 "output": step_run.output_content
             })
-            time.sleep(1.0)
+            simulated_sleep(1.0)
 
         # --- Complete Pipeline Run ---
         run.status = 'completed'

@@ -41,6 +41,7 @@ class AIConsumer(AsyncJsonWebsocketConsumer):
             user = self.scope.get("user")
             username = user.username if user and hasattr(user, 'username') else "Team Member"
             
+            from django.utils import timezone
             await self.channel_layer.group_send(
                 self.group_name,
                 {
@@ -50,7 +51,7 @@ class AIConsumer(AsyncJsonWebsocketConsumer):
                         "data": {
                             "user": username,
                             "guidance": data.get("guidance", ""),
-                            "timestamp": str(json.loads(json.dumps(content.get("timestamp", ""))))
+                            "timestamp": timezone.now().isoformat()
                         }
                     }
                 }

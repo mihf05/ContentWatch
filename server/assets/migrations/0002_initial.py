@@ -6,8 +6,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    initial = True
-
     dependencies = [
         ('assets', '0001_initial'),
         ('campaigns', '0001_initial'),

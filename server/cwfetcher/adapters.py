@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from blueprint import BasePlatformAdapter
-from dataclass import VideoMetrics
+from .blueprint import BasePlatformAdapter
+from .dataclass import VideoMetrics
 
 
 GEMINI_API_KEY = 'AIzaSyAkzs1lUXNPh3hW4n5fI18DEx6HTc83AdM'

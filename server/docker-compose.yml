@@ -10,6 +10,8 @@ services:
     depends_on:
       - cwredis
       - cwdb
+    env_file:
+      - .env
     environment:
       REDIS_HOST: cwredis
       REDIS_PORT: 6379
@@ -28,6 +30,8 @@ services:
     depends_on:
       - cwredis
       - cwdb
+    env_file:
+      - .env
     environment:
       REDIS_HOST: cwredis
       REDIS_PORT: 6379

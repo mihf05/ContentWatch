@@ -1,0 +1,29 @@
+Auth: 
+POST   /api/auth/login/
+GET     /api/auth/me/
+
+API integration: 
+POST        /api/integrations/connect/
+GET          /api/integrations/
+DELETE   /api/integrations/{id}/
+
+Analytics:
+POST   /api/analyze/
+GET     /api/analyze/status/
+GET     /api/insights/
+
+
+INPUT data points:
+Raw metrics
+    Views
+    Likes
+    Comments
+    Duration
+    Posted_at
+
+Derived features
+    Engagement rate
+    Like ratio (likes/views)
+    Comment ratio
+    Time bucket (morning/afternoon/evening)
+    Content label (topic/type)

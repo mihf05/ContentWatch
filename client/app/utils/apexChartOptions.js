@@ -69,6 +69,8 @@ export function createBaseChartOptions(overrides = {}) {
     chart: {
       fontFamily: 'Inter, sans-serif',
       background: 'transparent',
+      width: '100%',
+      redrawOnParentResize: true,
       toolbar: CHART_TOOLBAR_OFF,
       zoom: { enabled: false },
       foreColor: CHART_UI.label,
@@ -91,7 +93,7 @@ export function createBaseChartOptions(overrides = {}) {
     grid: {
       borderColor: CHART_UI.grid,
       strokeDashArray: 3,
-      padding: { top: 8, right: 12, bottom: 4, left: 8 },
+      padding: { top: 8, right: 4, bottom: 4, left: 4 },
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
       row: { colors: ['transparent', 'transparent'], opacity: 0 },
@@ -126,12 +128,17 @@ export function createBaseChartOptions(overrides = {}) {
 }
 
 function timeSeriesXaxis(dates) {
+  const manyPoints = dates.length > 7
   return {
     categories: dates,
+    tickAmount: manyPoints ? 6 : dates.length,
     labels: {
-      rotate: -35,
-      rotateAlways: dates.length > 7,
+      rotate: manyPoints ? -25 : 0,
+      rotateAlways: false,
       hideOverlappingLabels: true,
+      trim: true,
+      maxHeight: 48,
+      style: { colors: CHART_UI.label, fontSize: '10px', fontWeight: 500 },
       formatter: formatDateTick,
     },
     tooltip: { enabled: false },
@@ -239,14 +246,25 @@ const singleBarPlotOptions = {
   },
 }
 
+function bucketLegend() {
+  return {
+    ...enhancedLegend(),
+    position: 'bottom',
+    horizontalAlign: 'center',
+    offsetY: 4,
+    fontSize: '11px',
+    itemMargin: { horizontal: 8, vertical: 4 },
+  }
+}
+
 function dualYaxisConfig() {
   return [
     {
-      title: {
-        text: 'Views',
-        style: { color: CHART_UI.axis, fontSize: '11px', fontWeight: 600 },
+      title: { show: false },
+      labels: {
+        formatter: (v) => formatCompactNumber(v),
+        style: { fontSize: '10px' },
       },
-      labels: { formatter: (v) => formatCompactNumber(v) },
       tickAmount: 4,
     },
     {
@@ -254,11 +272,11 @@ function dualYaxisConfig() {
       min: 0,
       max: 1,
       tickAmount: 5,
-      title: {
-        text: 'Engagement',
-        style: { color: CHART_UI.axis, fontSize: '11px', fontWeight: 600 },
+      title: { show: false },
+      labels: {
+        formatter: (v) => `${Math.round(v * 100)}%`,
+        style: { fontSize: '10px' },
       },
-      labels: { formatter: (v) => `${Math.round(v * 100)}%` },
     },
   ]
 }
@@ -294,11 +312,14 @@ export function buildDualMetricBucketChart(items, labelKey) {
       xaxis: {
         categories,
         labels: {
-          style: { colors: CHART_UI.label, fontSize: '11px', fontWeight: 500 },
+          trim: true,
+          hideOverlappingLabels: true,
+          maxHeight: 56,
+          style: { colors: CHART_UI.label, fontSize: '10px', fontWeight: 500 },
         },
       },
       yaxis: dualYaxisConfig(),
-      legend: enhancedLegend(),
+      legend: bucketLegend(),
       tooltip: {
         ...enhancedTooltip(),
         y: [

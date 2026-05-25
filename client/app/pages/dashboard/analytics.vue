@@ -23,8 +23,8 @@ onMounted(() => loadAnalytics())
     <div class="analytics-ambient analytics-ambient--brand" />
     <div class="analytics-ambient analytics-ambient--purple" />
 
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-      <div>
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 min-w-0">
+      <div class="min-w-0">
         <span class="text-label-md text-brand uppercase">Performance Telemetry</span>
         <h2 class="text-headline-lg text-white tracking-tight mt-1">Analytics</h2>
         <p class="text-body-sm text-gray-500 mt-1">
@@ -37,20 +37,20 @@ onMounted(() => loadAnalytics())
       </button>
     </div>
 
-    <div v-if="fetchError" class="analytics-error" role="alert">
+    <div v-if="fetchError" class="analytics-error flex-wrap" role="alert">
       <span class="material-symbols-outlined text-2xl shrink-0 text-red-400">error</span>
-      <p class="text-body-sm flex-grow text-red-200">{{ fetchError }}</p>
+      <p class="text-body-sm grow text-red-200">{{ fetchError }}</p>
       <button type="button" class="analytics-btn-danger" @click="loadAnalytics">Retry</button>
     </div>
 
     <!-- Timeseries -->
-    <div>
+    <div class="min-w-0">
       <p class="analytics-section-label">Trends</p>
-      <div class="grid grid-cols-1 gap-6">
+      <div class="grid grid-cols-1 gap-6 min-w-0">
         <DashboardApexChartPanel featured accent="brand" title="Views Over Time"
           description="Daily view counts across your connected content" icon="visibility" :loading="isLoading"
           :chart="viewsChart" type="area" :height="340" />
-        <div class="grid grid-cols-1 xl:grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-6 min-w-0">
           <DashboardApexChartPanel accent="purple" title="Engagement Over Time"
             description="Daily engagement rate trend" icon="favorite" :loading="isLoading" :chart="engagementChart"
             type="area" :height="300" />
@@ -59,9 +59,9 @@ onMounted(() => loadAnalytics())
     </div>
 
     <!-- Buckets -->
-    <div>
+    <div class="min-w-0">
       <p class="analytics-section-label">Buckets</p>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
         <DashboardApexChartPanel accent="brand" title="By Content Type"
           description="Avg views and engagement per format" icon="smart_display" :loading="isLoading"
           :chart="contentTypeChart" type="bar" :height="320" />

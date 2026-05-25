@@ -56,7 +56,13 @@ const accentGlow = computed(() => {
 
       <ClientOnly v-else>
         <div class="chart-panel__plot chart-apex-root">
-          <apexchart :type="type" :height="height" :options="chart.options" :series="chart.series" />
+          <apexchart
+            width="100%"
+            :type="type"
+            :height="height"
+            :options="chart.options"
+            :series="chart.series"
+          />
         </div>
         <template #fallback>
           <div class="chart-panel__skeleton" :style="{ height: `${height}px` }" />

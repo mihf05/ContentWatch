@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/', include('assets.urls')),
     path('api/', include('collaboration.urls')),
     path('api/', include('messaging.urls')),
+    path('api/', include('ai_workflows.urls')),
 ]
 
 # Serve media files in development

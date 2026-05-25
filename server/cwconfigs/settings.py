@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'collaboration',
     'messaging',
     'events',
+    'ai_workflows',
 
     # Django core
     'django.contrib.admin',

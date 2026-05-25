@@ -93,9 +93,20 @@ class AIPipelineRunViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if run.status == 'in_progress':
+        from django.core.cache import cache
+        lock_key = f"ai_pipeline_trigger_lock_{run.id}"
+        
+        # 1. Prevent concurrent double-clicks or races using a Redis cache lock
+        if not cache.add(lock_key, "locked", timeout=15):
             return Response(
-                {"error": "Pipeline execution is already in progress."},
+                {"error": "Pipeline execution is already being triggered."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 2. Prevent triggering if the run is already active or finished
+        if run.status in ['in_progress', 'completed']:
+            return Response(
+                {"error": f"Cannot trigger pipeline run in status: {run.status}."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

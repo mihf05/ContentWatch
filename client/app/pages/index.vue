@@ -1,3 +1,11 @@
+<script setup>
+const authStore = useAuthStore()
+
+if (!authStore.user) {
+  await authStore.fetchUser()
+}
+</script>
+
 <template>
   <main
     class="flex-grow pt-24 md:pt-32 pb-16 md:pb-24 relative z-10 px-4 sm:px-6 md:px-12 max-w-screen-2xl mx-auto w-full overflow-hidden">

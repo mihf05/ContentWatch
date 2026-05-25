@@ -1,4 +1,10 @@
 <script setup>
+const authStore = useAuthStore()
+
+if (!authStore.user) {
+  await authStore.fetchUser()
+}
+
 const developers = [
   {
     name: 'S.M Nazmus Sadat',
@@ -79,10 +85,12 @@ const developers = [
           </p>
 
           <div class="flex gap-4 mt-auto">
-            <a :href="dev.github" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub" target="_blank">
+            <a :href="dev.github" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub"
+              target="_blank">
               <Icon name="mdi:github" class="text-xl" />
             </a>
-            <a :href="dev.linkedin" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn" target="_blank">
+            <a :href="dev.linkedin" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn"
+              target="_blank">
               <Icon name="mdi:linkedin" class="text-xl" />
             </a>
           </div>

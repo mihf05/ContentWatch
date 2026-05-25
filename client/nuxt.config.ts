@@ -28,9 +28,20 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-	runtimeConfig: {
-		public: {
-			apiBase: import.meta.env.API_URL,
-		}
-	},
+
+  runtimeConfig: {
+    public: {
+      apiBase: '/api',
+    }
+  },
+
+  // Proxy /api requests to Django backend — avoids CORS in development
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000/api',
+        changeOrigin: true,
+      },
+    },
+  },
 })

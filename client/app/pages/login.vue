@@ -1,13 +1,22 @@
 <script setup>
-import { ref } from 'vue'
-
-definePageMeta({ layout: 'auth' })
+definePageMeta({ layout: 'auth', middleware: 'guest' })
 
 useHead({ title: 'Login — ContentWatch' })
+
+const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
+
+async function handleLogin() {
+  if (!email.value || !password.value) return
+
+  const success = await authStore.login(email.value, password.value)
+  if (success) {
+    navigateTo('/')
+  }
+}
 </script>
 
 <template>
@@ -24,7 +33,7 @@ const showPassword = ref(false)
         <p class="text-gray-400 text-sm">Sign in to your account to continue</p>
       </div>
 
-      <form @submit.prevent class="flex flex-col gap-5">
+      <form @submit.prevent="handleLogin" class="flex flex-col gap-5">
         <!-- Email -->
         <div class="flex flex-col gap-2">
           <label for="login-email" class="text-sm font-medium text-gray-300">Email</label>
@@ -32,7 +41,8 @@ const showPassword = ref(false)
             <Icon name="material-symbols:mail-outline"
               class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
             <input id="login-email" v-model="email" type="email" placeholder="you@example.com" autocomplete="email"
-              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-500 text-sm outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/30 transition-all" />
+              :disabled="authStore.isLoading"
+              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-500 text-sm outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/30 transition-all disabled:opacity-50" />
           </div>
         </div>
 
@@ -47,8 +57,8 @@ const showPassword = ref(false)
             <Icon name="material-symbols:lock-outline"
               class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-lg" />
             <input id="login-password" v-model="password" :type="showPassword ? 'text' : 'password'"
-              placeholder="••••••••" autocomplete="current-password"
-              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 text-white placeholder-gray-500 text-sm outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/30 transition-all" />
+              placeholder="••••••••" autocomplete="current-password" :disabled="authStore.isLoading"
+              class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-11 text-white placeholder-gray-500 text-sm outline-none focus:border-brand/50 focus:ring-1 focus:ring-brand/30 transition-all disabled:opacity-50" />
             <button type="button" @click="showPassword = !showPassword"
               class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
               <Icon
@@ -59,9 +69,12 @@ const showPassword = ref(false)
         </div>
 
         <!-- Submit -->
-        <button type="submit"
-          class="w-full bg-brand text-jetblack font-bold text-sm py-3 rounded-xl hover:shadow-[0_0_20px_rgba(77,220,198,0.35)] transition-all mt-2">
-          Sign In
+        <button type="submit" :disabled="authStore.isLoading"
+          class="w-full bg-brand text-jetblack font-bold text-sm py-3 rounded-xl hover:shadow-[0_0_20px_rgba(77,220,198,0.35)] transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <span v-if="authStore.isLoading"
+            class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
+            role="status"></span>
+          {{ authStore.isLoading ? 'Signing In...' : 'Sign In' }}
         </button>
       </form>
 

@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-
 const isMenuOpen = ref(false)
+const authStore = useAuthStore()
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -12,6 +11,11 @@ const navLinks = [
   { name: 'Analytics', href: '#analytics' },
   { name: 'Features', href: '#features' }
 ]
+
+function handleLogout() {
+  authStore.logout()
+  isMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -29,10 +33,20 @@ const navLinks = [
       
       <!-- Desktop Actions -->
       <div class="hidden md:flex items-center gap-4">
-        <NuxtLink to="/login"
-          class="font-label-md text-label-md text-gray-400 hover:text-brand transition-colors">Login</NuxtLink>
-        <NuxtLink to="/register"
-          class="bg-brand text-jetblack font-label-md text-label-md px-6 py-2 rounded-full hover:shadow-[0_0_15px_rgba(77,220,198,0.4)] transition-shadow font-bold">Get Started</NuxtLink>
+        <template v-if="authStore.isAuthenticated">
+          <NuxtLink to="/dashboard"
+            class="font-label-md text-label-md text-gray-400 hover:text-brand transition-colors">Dashboard</NuxtLink>
+          <button @click="handleLogout"
+            class="bg-white/10 hover:bg-white/20 text-white font-label-md text-label-md px-6 py-2 rounded-full border border-white/10 transition-colors font-bold cursor-pointer">
+            Logout
+          </button>
+        </template>
+        <template v-else>
+          <NuxtLink to="/login"
+            class="font-label-md text-label-md text-gray-400 hover:text-brand transition-colors">Login</NuxtLink>
+          <NuxtLink to="/register"
+            class="bg-brand text-jetblack font-label-md text-label-md px-6 py-2 rounded-full hover:shadow-[0_0_15px_rgba(77,220,198,0.4)] transition-shadow font-bold">Get Started</NuxtLink>
+        </template>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -52,12 +66,23 @@ const navLinks = [
       </a>
 
       <div class="w-full px-6 sm:px-8 mt-1 sm:mt-2 flex flex-col gap-3 sm:gap-4">
-        <NuxtLink to="/login" @click="isMenuOpen = false"
-          class="block w-full py-2.5 sm:py-3 border border-white/10 rounded-full font-label-md text-label-md text-white hover:bg-white/5 transition-colors text-center">
-          Login</NuxtLink>
-        <NuxtLink to="/register" @click="isMenuOpen = false"
-          class="block w-full bg-brand text-jetblack font-bold font-label-md text-label-md py-2.5 sm:py-3 rounded-full hover:shadow-[0_0_15px_rgba(77,220,198,0.4)] transition-shadow text-center">
-          Get Started</NuxtLink>
+        <template v-if="authStore.isAuthenticated">
+          <NuxtLink to="/dashboard" @click="isMenuOpen = false"
+            class="block w-full py-2.5 sm:py-3 border border-white/10 rounded-full font-label-md text-label-md text-white hover:bg-white/5 transition-colors text-center">
+            Dashboard</NuxtLink>
+          <button @click="handleLogout"
+            class="block w-full bg-white/10 hover:bg-white/20 text-white font-bold font-label-md text-label-md py-2.5 sm:py-3 rounded-full border border-white/10 transition-colors text-center cursor-pointer">
+            Logout
+          </button>
+        </template>
+        <template v-else>
+          <NuxtLink to="/login" @click="isMenuOpen = false"
+            class="block w-full py-2.5 sm:py-3 border border-white/10 rounded-full font-label-md text-label-md text-white hover:bg-white/5 transition-colors text-center">
+            Login</NuxtLink>
+          <NuxtLink to="/register" @click="isMenuOpen = false"
+            class="block w-full bg-brand text-jetblack font-bold font-label-md text-label-md py-2.5 sm:py-3 rounded-full hover:shadow-[0_0_15px_rgba(77,220,198,0.4)] transition-shadow text-center">
+            Get Started</NuxtLink>
+        </template>
       </div>
     </div>
   </header>

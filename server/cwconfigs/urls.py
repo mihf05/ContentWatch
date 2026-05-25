@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.urls import path
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from contentwatch.views import RegisterView, LoginView, UserMeView
+from contentwatch.views import (
+    RegisterView, LoginView, UserMeView,
+    EngagementTimeSeries, ViewTimeSeries, InsightsView
+)
 
 
 urlpatterns = [
@@ -15,5 +18,9 @@ urlpatterns = [
     path('api/auth/register', RegisterView.as_view(), name='auth_register'),
     path('api/auth/login', LoginView.as_view(), name='auth_login'),
     path('api/auth/me', UserMeView.as_view(), name='auth_me'),
+
+    path('api/user/insights', InsightsView.as_view(), name='insights'),
+    path('api/user/timeseries/engagements', EngagementTimeSeries.as_view(), name='engagements'),
+    path('api/user/timeseries/views', ViewTimeSeries.as_view(), name='views'),
 ]
 

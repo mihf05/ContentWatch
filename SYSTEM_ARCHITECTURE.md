@@ -318,8 +318,8 @@ The following index matches abstract architectural elements directly to their ph
 | Architectural Component | Logical Function | Code File Path | Core Lines / Hooks |
 | :--- | :--- | :--- | :--- |
 | **API Trigger Point** | REST Trigger View | [views.py](server/ai_workflows/views.py#L84-L129) | `AIPipelineRunViewSet.trigger` |
-| **Redis Memory Lock** | Double-Click Protection | [views.py](server/ai_workflows/views.py#L108-L114) | `cache.add("ai_pipeline_trigger_lock_...", ...)` |
-| **Row Transaction Lock** | Write concurrency safe lock | [views.py](server/ai_workflows/views.py#L98-L106) | `select_for_update()` inside `transaction.atomic()` |
+| **Redis Memory Lock** | Double-Click Protection | [views.py](server/ai_workflows/views.py#L98-L104) | `cache.add("ai_pipeline_trigger_lock_...", ...)` |
+| **Row Transaction Lock** | Write concurrency safe lock | [views.py](server/ai_workflows/views.py#L106-L123) | `select_for_update()` inside `transaction.atomic()` |
 | **Task Scheduler** | Offloading to Celery Worker | [views.py](server/ai_workflows/views.py#L125) | `execute_ai_pipeline.delay(run.id)` |
 | **Workflow Task Runner** | State Driver / Step Engine | [tasks.py](server/ai_workflows/tasks.py#L97-L261) | `@shared_task(name="ai_workflows.execute_pipeline")` |
 | **RAG Retrieval Engine** | Scored Guidelines Context | [tasks.py](server/ai_workflows/tasks.py#L42-L94) | `retrieve_rag_context(...)` |

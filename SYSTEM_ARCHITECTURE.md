@@ -60,7 +60,7 @@ graph TB
 * **Role**: Serves as the interactive dashboard for the creator or creative manager.
 * **Key Features**:
   * Triggers workflows and manages inputs (e.g. topic, audience targets, format choices).
-  * Opens a persistent bidirectional **WebSocket (WSS)** connection to `ws/ai/run/<run_id>/` upon triggering execution.
+  * Opens a persistent bidirectional **WebSocket (WSS)** connection to `ws/ai/run/<int:run_id>/` upon triggering execution.
   * Dynamically animates agent thoughts (raw logic traces) and streams generation chunks into standard Markdown layouts, preventing interface freezing.
   * Allows creators to inject mid-run critiques/guidance dynamically, offering *Human-in-the-Loop* orchestration.
 
@@ -170,26 +170,41 @@ erDiagram
 ### A. Dual-Stage Concurrency & Lock Mechanism
 To guarantee that a pipeline run is never triggered concurrently—which would result in corrupted output documents, duplicated WebSocket events, and wasted LLM token costs—the trigger viewset uses two complementary lock strategies:
 
-1. **Distributed Memory Cache Lock (Redis)**:
+1. **Distributed Memory Cache Lock (Redis-backed)**:
    * **Purpose**: Blocks rapid, sub-second "double-click" requests from the client.
-   * **Implementation**: Uses Redis `cache.add(lock_key, "locked", timeout=15)` which is an atomic `SETNX` operation under the hood. If the key already exists, the request immediately terminates with an error.
+   * **Implementation**: Uses Django cache (`cache.add(lock_key, "locked", timeout=15)`) to create the short-lived lock key only if it does not already exist. In deployments where Django's cache backend is configured with Redis, this provides Redis-backed atomic `SETNX` lock behavior for this fast-fail guard. If the key already exists, the request immediately terminates with an error before any database row lock is taken.
 2. **Database Row-Level Transaction Lock (PostgreSQL/SQL Server)**:
-   * **Purpose**: Ensures database-level serialization and status integrity.
+   * **Purpose**: Ensures database-level serialization and status integrity after the request has passed the fast cache guard.
    * **Implementation**: Uses Django's `select_for_update()` inside an atomic transaction block (`transaction.atomic()`). This acquires a write-intent row lock (`SELECT ... FOR UPDATE`), blocking subsequent threads until the active transaction completes and commits the transition status to `pending`.
 
 ```python
 # Detailed execution path inside views.py
-with transaction.atomic():
-    run = AIPipelineRun.objects.select_for_update().get(id=run.id)
-    if run.status in ['pending', 'in_progress']:
-        return Response({"error": "Cannot trigger pipeline run in active state."}, status=400)
+# 1. Acquire cache double-click lock to block rapid duplicate requests before holding DB locks
+lock_key = f"ai_pipeline_trigger_lock_{run.id}"
+if not cache.add(lock_key, "locked", timeout=15):
+    return Response(
+        {"error": "Pipeline execution is already being triggered."},
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
-    lock_key = f"ai_pipeline_trigger_lock_{run.id}"
-    if not cache.add(lock_key, "locked", timeout=15):
-        return Response({"error": "Execution is already in progress."}, status=400)
+# 2. Perform DB-level check inside atomic select_for_update to block concurrent triggers
+from django.db import transaction
+try:
+    with transaction.atomic():
+        run = AIPipelineRun.objects.select_for_update().get(id=run.id)
+        if run.status in ['pending', 'in_progress']:
+            cache.delete(lock_key)
+            return Response(
+                {"error": f"Cannot trigger pipeline run in status: {run.status}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    run.status = 'pending'
-    run.save(update_fields=['status'])
+        run.status = 'pending'
+        run.save(update_fields=['status'])
+except Exception as e:
+    # Safely delete lock on early failure paths
+    cache.delete(lock_key)
+    raise e
 ```
 
 ### B. High-Speed Keyword Relevance RAG Scoring
@@ -302,17 +317,17 @@ The following index matches abstract architectural elements directly to their ph
 
 | Architectural Component | Logical Function | Code File Path | Core Lines / Hooks |
 | :--- | :--- | :--- | :--- |
-| **API Trigger Point** | REST Trigger View | [views.py](file:///d:/open-source/ContentWatch/server/ai_workflows/views.py#L84-L129) | `AIPipelineRunViewSet.trigger` |
-| **Redis Memory Lock** | Double-Click Protection | [views.py](file:///d:/open-source/ContentWatch/server/ai_workflows/views.py#L108-L114) | `cache.add("ai_pipeline_trigger_lock_...", ...)` |
-| **Row Transaction Lock** | Write concurrency safe lock | [views.py](file:///d:/open-source/ContentWatch/server/ai_workflows/views.py#L98-L106) | `select_for_update()` inside `transaction.atomic()` |
-| **Task Scheduler** | Offloading to Celery Worker | [views.py](file:///d:/open-source/ContentWatch/server/ai_workflows/views.py#L125) | `execute_ai_pipeline.delay(run.id)` |
-| **Workflow Task Runner** | State Driver / Step Engine | [tasks.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tasks.py#L97-L261) | `@shared_task(name="ai_workflows.execute_pipeline")` |
-| **RAG Retrieval Engine** | Scored Guidelines Context | [tasks.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tasks.py#L42-L94) | `retrieve_rag_context(...)` |
-| **RAG Knowledge Store** | Schema configuration | [models.py](file:///d:/open-source/ContentWatch/server/ai_workflows/models.py#L36-L61) | `AIKnowledgeDocument` |
-| **Multi-Agent Taskforce** | Specialized Agent Profile Schema | [models.py](file:///d:/open-source/ContentWatch/server/ai_workflows/models.py#L5-L34) | `AIAgentProfile` (Writer, Reviewer, Designer, SEO) |
-| **Live Broadcast Utility** | Channels layer event wrapper | [tasks.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tasks.py#L18-L33) | `broadcast_ai_event(...)` |
-| **WebSocket Consumer** | Event stream broker | [consumers.py](file:///d:/open-source/ContentWatch/server/ai_workflows/consumers.py#L5-L66) | `AIConsumer(AsyncJsonWebsocketConsumer)` |
-| **WS Routing Table** | URL Pattern registration | [routing.py](file:///d:/open-source/ContentWatch/server/ai_workflows/routing.py#L4-L6) | `ws/ai/run/<int:run_id>/` |
+| **API Trigger Point** | REST Trigger View | [views.py](server/ai_workflows/views.py#L84-L129) | `AIPipelineRunViewSet.trigger` |
+| **Redis Memory Lock** | Double-Click Protection | [views.py](server/ai_workflows/views.py#L108-L114) | `cache.add("ai_pipeline_trigger_lock_...", ...)` |
+| **Row Transaction Lock** | Write concurrency safe lock | [views.py](server/ai_workflows/views.py#L98-L106) | `select_for_update()` inside `transaction.atomic()` |
+| **Task Scheduler** | Offloading to Celery Worker | [views.py](server/ai_workflows/views.py#L125) | `execute_ai_pipeline.delay(run.id)` |
+| **Workflow Task Runner** | State Driver / Step Engine | [tasks.py](server/ai_workflows/tasks.py#L97-L261) | `@shared_task(name="ai_workflows.execute_pipeline")` |
+| **RAG Retrieval Engine** | Scored Guidelines Context | [tasks.py](server/ai_workflows/tasks.py#L42-L94) | `retrieve_rag_context(...)` |
+| **RAG Knowledge Store** | Schema configuration | [models.py](server/ai_workflows/models.py#L36-L61) | `AIKnowledgeDocument` |
+| **Multi-Agent Taskforce** | Specialized Agent Profile Schema | [models.py](server/ai_workflows/models.py#L5-L34) | `AIAgentProfile` (Writer, Reviewer, Designer, SEO) |
+| **Live Broadcast Utility** | Channels layer event wrapper | [tasks.py](server/ai_workflows/tasks.py#L18-L33) | `broadcast_ai_event(...)` |
+| **WebSocket Consumer** | Event stream broker | [consumers.py](server/ai_workflows/consumers.py#L5-L66) | `AIConsumer(AsyncJsonWebsocketConsumer)` |
+| **WS Routing Table** | URL Pattern registration | [routing.py](server/ai_workflows/routing.py#L4-L6) | `ws/ai/run/<int:run_id>/` |
 
 ---
 
@@ -322,10 +337,10 @@ The robust engineering constraints of this multi-agent architecture are actively
 
 1. **RAG Precision Search Test**: 
    * **Verification**: Ensures that the `retrieve_rag_context` searches targeted categories and applies weight boosts properly.
-   * **Verification Code**: `test_rag_context_retrieval` in [tests.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tests.py#L85-L95).
+   * **Verification Code**: `test_rag_context_retrieval` in [tests.py](server/ai_workflows/tests.py#L85-L95).
 2. **API Endpoint & Locking Test**:
    * **Verification**: Verifies route validation, serialization of pipeline inputs, and safe double-trigger failures.
-   * **Verification Code**: `test_api_crud_operations` in [tests.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tests.py#L96-L130).
+   * **Verification Code**: `test_api_crud_operations` in [tests.py](server/ai_workflows/tests.py#L96-L130).
 3. **End-to-End Orchestrator Integrity Test**:
    * **Verification**: Triggers the entire pipeline sequentially, running Celery task hooks, applying RAG context structures, creating step run histories, and confirming output generation formats.
-   * **Verification Code**: `test_full_pipeline_task_execution` in [tests.py](file:///d:/open-source/ContentWatch/server/ai_workflows/tests.py#L131-L165).
+   * **Verification Code**: `test_full_pipeline_task_execution` in [tests.py](server/ai_workflows/tests.py#L131-L165).
